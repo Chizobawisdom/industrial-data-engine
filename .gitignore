@@ -1,2 +1,8 @@
+echo "venv/" >> .gitignore
+echo "data/*.csv" >> .gitignore
+echo "outputs/*.csv" >> .gitignore
+echo "__pycache__/" >> .gitignore
+
 .env
 .venv
+
