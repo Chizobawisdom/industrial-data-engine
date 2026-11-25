@@ -1,0 +1,10 @@
+CREATE SCHEMA IF NOT EXISTS bronze;
+CREATE SCHEMA IF NOT EXISTS silver;
+CREATE SCHEMA IF NOT EXISTS gold;
+
+CREATE TABLE IF NOT EXISTS bronze.production_events (
+    event_id UUID PRIMARY KEY,
+    event_timestamp TIMESTAMPTZ NOT NULL,
+    ingested_at TIMESTAMPTZ DEFAULT NOW(),
+    payload JSONB NOT NULL
+);
