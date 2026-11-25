@@ -6,7 +6,7 @@ from psycopg2.extras import Json
 
 # Configuration
 KAFKA_TOPIC = "factory.events"
-KAFKA_SERVERS = ["localhost:9092"]
+KAFKA_SERVERS = ['127.0.0.1:9092']
 DB_CONFIG = {
     "dbname": "manufacturing",
     "user": "engineer",

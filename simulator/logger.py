@@ -3,16 +3,33 @@ import uuid
 import os
 from datetime import datetime
 
+import json
+import uuid
+import os
+from datetime import datetime
+from kafka import KafkaProducer
+
 class EventLogger:
-    def __init__(self, output_dir="outputs"):
+    def __init__(self, output_dir="outputs", use_kafka=False, kafka_topic="factory.events"):
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
         self.file_path = os.path.join(self.output_dir, "manufacturing_events.jsonl")
-        # Clear the file at the start of a run
-        open(self.file_path, 'w').close()
         
-        # Counters for validation later
+        if not use_kafka:
+            open(self.file_path, 'w').close()
+            
         self.counts = {}
+        self.use_kafka = use_kafka
+        self.kafka_topic = kafka_topic
+        
+        if self.use_kafka:
+            print(f"Connecting to Kafka...")
+            # THIS IS WHERE THE BLOCK GOES
+            self.producer = KafkaProducer(
+                bootstrap_servers=['127.0.0.1:9092'],  # Port 9092 for the EXTERNAL listener
+                value_serializer=lambda v: json.dumps(v).encode('utf-8')
+            )
+            print("Kafka connected!")
 
     def _write(self, event_type: str, payload: dict, sim_time: float):
         # Standard Event Envelope
