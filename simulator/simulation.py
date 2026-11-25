@@ -107,9 +107,9 @@ class RouterMachine(LoggingMachine):
 
     
 # --- Simulation Run ---
-def run_simulation(sim_time=1000):
+def run_simulation(sim_time=5000):
     env = simpy.Environment()
-    logger = EventLogger()
+    logger = EventLogger(use_kafka=True, kafka_topic="factory.events", kafka_servers=["localhost:9092"])
 
         # Nodes
     source = LoggingSource(env, id="SOURCE", logger=logger, inter_arrival_time=5.0)
