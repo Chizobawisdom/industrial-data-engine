@@ -32,18 +32,29 @@ class EventLogger:
             print("Kafka connected!")
 
     def _write(self, event_type: str, payload: dict, sim_time: float):
-        # Standard Event Envelope
         event = {
             "event_id": str(uuid.uuid4()),
             "event_type": event_type,
             "timestamp": sim_time,
-            "ingested_at": datetime.utcnow().isoformat() + "Z", # Simulates when the DB would receive it
+            "ingested_at": datetime.utcnow().isoformat() + "Z",
             "payload": payload
         }
         
-        # Write to JSONL
+        # 1. Write locally (optional, but keep for debugging)
         with open(self.file_path, 'a') as f:
             f.write(json.dumps(event) + "\n")
+            
+        # 2. Route to the correct Kafka topic
+        if self.use_kafka:
+            topic_map = {
+                "production_event": "manufacturing.production",
+                "quality_inspection": "manufacturing.quality",
+                "rework_event": "manufacturing.rework",
+                "scrap_event": "manufacturing.scrap",
+                "downtime_event": "manufacturing.production" # Route downtime to production
+            }
+            target_topic = topic_map.get(event_type, "manufacturing.production")
+            self.producer.send(target_topic, event)
             
         self.counts[event_type] = self.counts.get(event_type, 0) + 1
 

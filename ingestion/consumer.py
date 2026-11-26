@@ -5,7 +5,12 @@ import psycopg2
 from psycopg2.extras import Json
 
 # Configuration
-KAFKA_TOPIC = "factory.events"
+KAFKA_TOPICS = [
+    "manufacturing.production",
+    "manufacturing.quality",
+    "manufacturing.rework",
+    "manufacturing.scrap"
+]
 KAFKA_SERVERS = ['127.0.0.1:9092']
 DB_CONFIG = {
     "dbname": "manufacturing",
@@ -33,13 +38,14 @@ def main():
 
     # Connect to Kafka
     consumer = KafkaConsumer(
-        KAFKA_TOPIC,
+        *KAFKA_TOPICS, # Unpack the list
         bootstrap_servers=KAFKA_SERVERS,
+        group_id="manufacturing_consumer_v1",
         auto_offset_reset='earliest',
-        enable_auto_commit=False, # We will commit offsets manually AFTER DB insert
+        enable_auto_commit=False,
         value_deserializer=lambda x: json.loads(x.decode('utf-8'))
     )
-    print(f"Listening on topic: {KAFKA_TOPIC}")
+    print(f"Listening on topics: {KAFKA_TOPICS}")
 
     try:
         for message in consumer:
