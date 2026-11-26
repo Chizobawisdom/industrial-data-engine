@@ -6,3 +6,4 @@ echo "__pycache__/" >> .gitignore
 .env
 .venv
 
+manufacturing_events.jsonl
